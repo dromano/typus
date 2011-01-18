@@ -8,6 +8,8 @@
 
 =end
 
+require 'carrierwave/orm/activerecord'
+
 class Asset < ActiveRecord::Base
 
   belongs_to :resource, :polymorphic => true
@@ -22,5 +24,8 @@ class Asset < ActiveRecord::Base
 
   def original_file_name
   end
-
+  
+  # CarrierWave Attachment
+  mount_uploader :carrierwave, AssetUploader
+  
 end

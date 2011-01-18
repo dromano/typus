@@ -20,6 +20,8 @@ ActiveRecord::Schema.define do
     t.string :paperclip_content_type
     t.integer :paperclip_file_size
     t.datetime :paperclip_updated_at
+    #CarrierWave
+    t.string :carrierwave
   end
 
   add_index :assets, :resource_id

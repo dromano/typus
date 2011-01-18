@@ -98,7 +98,16 @@ module Typus
 
   mattr_accessor :image_thumb_size
   @@image_thumb_size = '75x75#'
-
+  
+  ##
+  # Define `carrierwave` attachment styles.
+  
+  mattr_accessor :carrierwave_preview
+  @@carrierwave_preview = :preview
+  
+  mattr_accessor :carrierwave_thumb
+  @@carrierwave_thumb = :thumb
+  
   ##
   # Defines the default relationship table.
   #

@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 if ENV['RAILS_ENV'] == 'test'
   gemspec
 else
-  gem "typus", :git => "https://github.com/fesplugas/typus.git"
+	gem "typus", :git => "https://github.com/fesplugas/typus.git"
 end
 
 gem "acts_as_list"
@@ -17,11 +17,13 @@ group :test do
 end
 
 gem "paperclip"
+gem "carrierwave"
+gem "mini_magick"
 
 gem "rack-cache", :require => "rack/cache"
 gem "rails", "~> 3.0"
 
-gem 'sqlite3-ruby', '1.2.1'
+gem 'sqlite3-ruby', '1.3.3'
 
 # Keep this here because I use it as reference for development.
 gem "fastercsv", "1.5.3" if RUBY_VERSION < '1.9'

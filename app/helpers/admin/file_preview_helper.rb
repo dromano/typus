@@ -7,6 +7,8 @@ module Admin
         :paperclip
       elsif defined?(Dragonfly) && attachment.is_a?(Dragonfly::ActiveModelExtensions::Attachment)
         :dragonfly
+      elsif defined?(CarrierWave) && attachment.is_a?(CarrierWave::Uploader::Base)
+        :carrierwave
       end
     end
 
@@ -18,6 +20,7 @@ module Admin
       field = case get_type_of_attachment(attachment)
                  when :dragonfly then attribute
                  when :paperclip then "#{attribute}_file_name"
+                 when :carrierwave then attribute
                  end
 
       if !validators.include?(field) && attachment
@@ -38,6 +41,8 @@ module Admin
           typus_file_preview_for_dragonfly(attachment)
         when :paperclip
           typus_file_preview_for_paperclip(attachment)
+        when :carrierwave
+          typus_file_preview_for_carrierwave(attachment)
         end
       end
     end
@@ -61,6 +66,19 @@ module Admin
                  :thumb => attachment.url(Typus.file_thumbnail, false)
         else
           link_to attachment.original_filename, attachment.url(:original, false)
+        end
+      end
+    end
+    
+    def typus_file_preview_for_carrierwave(attachment)
+      if attachment.file
+        versions = attachment.versions.keys
+        if versions.include?(Typus.carrierwave_preview) && versions.include?(Typus.carrierwave_thumb)
+          render "admin/helpers/file_preview",
+                 :preview => attachment.send(Typus.carrierwave_preview).url,
+                 :thumb => attachment.send(Typus.carrierwave_thumb).url
+        else
+          link_to attachment.file.original_filename, attachment.url
         end
       end
     end

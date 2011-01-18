@@ -30,7 +30,7 @@ module Typus
           fields = data[filter.to_s] || data['default'] || ""
 
           virtual_fields = instance_methods - model_fields.keys.map { |i| i.to_s }
-
+          
           fields.extract_settings.map { |f| f.to_sym }.each do |field|
             if reflect_on_association(field)
               fields_with_type[field.to_s] = reflect_on_association(field).macro
@@ -44,8 +44,10 @@ module Typus
 
             dragonfly = respond_to?(:dragonfly_apps_for_attributes) && dragonfly_apps_for_attributes.try(:has_key?, field)
             paperclip = respond_to?(:attachment_definitions) && attachment_definitions.try(:has_key?, field)
-
-            if dragonfly || paperclip
+            carrierwave = method_defined?("#{field}_processing_error".to_sym) && method_defined?("#{field}_integrity_error".to_sym)
+            
+            
+            if dragonfly || paperclip || carrierwave
               fields_with_type[field.to_s] = :file
               next
             end
@@ -225,7 +227,7 @@ module Typus
     end
 
     module InstanceMethods
-
+      
       def owned_by?(user)
         send(Typus.user_fk) == user.id
       end

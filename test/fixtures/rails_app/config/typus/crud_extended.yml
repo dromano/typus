@@ -1,7 +1,7 @@
 Asset:
   fields:
-    default: caption, dragonfly, dragonfly_required
-    special: caption, dragonfly, dragonfly_required, original_file_name
+    default: caption, dragonfly, dragonfly_required, carrierwave
+    special: caption, dragonfly, dragonfly_required, original_file_name, carrierwave
   application: CRUD Extended
 
 Case:

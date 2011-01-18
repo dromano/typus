@@ -3,6 +3,7 @@ Factory.define :asset do |f|
   f.dragonfly File.new("#{Rails.root}/public/images/rails.png")
   f.dragonfly_required File.new("#{Rails.root}/public/images/rails.png")
   f.paperclip File.new("#{Rails.root}/public/images/rails.png")
+  f.carrierwave File.new("#{Rails.root}/public/images/rails.png")
 end
 
 Factory.define :case do |f|
