@@ -12,6 +12,8 @@ class Admin::ResourcesController < Admin::BaseController
   before_filter :set_order, :only => [:index]
   before_filter :set_fields, :only => [:index, :new, :edit, :create, :update, :show, :detach]
 
+  before_filter :check_if_we_can_add_a_new_item, :only => [:new, :create]
+
   ##
   # This is the main index of the model. With filters, conditions and more.
   #
@@ -31,8 +33,6 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   def new
-    check_if_we_can_add_a_new_item
-
     item_params = params.dup
     rejections = %w(controller action resource resource_id back_to selected)
     item_params.delete_if { |k, v| rejections.include?(k) }
@@ -45,8 +45,6 @@ class Admin::ResourcesController < Admin::BaseController
   # relationship between these items.
   #
   def create
-    check_if_we_can_add_a_new_item
-
     @item = @resource.new(params[@object_name])
 
     set_attributes_on_create
@@ -121,7 +119,7 @@ class Admin::ResourcesController < Admin::BaseController
   #
   def position
     @item.send(params[:go])
-    notice = Typus::I18n.t("Record moved to position %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
+    notice = Typus::I18n.t("%{model} successfully updated.", :model => @resource.model_name.human)
     redirect_to set_path, :notice => notice
   end
 
@@ -150,9 +148,9 @@ class Admin::ResourcesController < Admin::BaseController
   #
   def relate
     resource_class = params[:related][:model].typus_constantize
-    resource_tableized = params[:related][:model].tableize
+    association_name = params[:related][:association_name].tableize
 
-    if @item.send(resource_tableized) << resource_class.find(params[:related][:id])
+    if @item.send(association_name) << resource_class.find(params[:related][:id])
       flash[:notice] = Typus::I18n.t("%{model} successfully updated.", :model => @resource.model_name.human)
     end
 
@@ -181,12 +179,15 @@ class Admin::ResourcesController < Admin::BaseController
     #     item respect @item
     #
 
+    # This is not nil in case of a has_many :through association.
+    association_name = params[:association_name].to_sym unless params[:association_name].blank?
+
     case item_class.relationship_with(@resource)
     when :has_one
       association_name = @resource.model_name.downcase.to_sym
       worked = item.send(association_name).delete
     else
-      association_name = @resource.model_name.tableize.to_sym
+      association_name ||= @resource.model_name.tableize.to_sym
       worked = item.send(association_name).delete(@item)
     end
 
@@ -402,7 +403,7 @@ class Admin::ResourcesController < Admin::BaseController
       if item_class.relationship_with(@resource) == :has_one
         association_name = @resource.model_name.downcase.to_sym
         if item.send(association_name)
-          raise "Somehow I need to hide the `Add New` link.\nI'm protecting you off adding a new `#{@resource.model_name}` to `#{item_class.model_name}`."
+          render :text => "Not allowed!", :status => :unprocessable_entity
         end
       end
     end

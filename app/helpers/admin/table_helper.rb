@@ -2,13 +2,14 @@ module Admin
 
   module TableHelper
 
-    def build_table(model, fields, items, link_options = {}, association = nil)
+    def build_table(model, fields, items, link_options = {}, association = nil, association_name = nil)
       render "admin/helpers/table/table",
              :model => model,
              :fields => fields,
              :items => items,
              :link_options => link_options,
-             :headers => table_header(model, fields)
+             :headers => table_header(model, fields),
+             :association_name => association_name
     end
 
     def table_header(model, fields, params = params)
@@ -50,11 +51,11 @@ module Admin
       @actions ||= []
     end
 
-    def table_actions(model, item)
+    def table_actions(model, item, association_name = nil)
       actions.map do |action|
         if admin_user.can?(action[:action], model.name)
           link_to Typus::I18n.t(action[:action_name]),
-                  { :controller => model.to_resource, :action => action[:action], :id => item.id, :resource => action[:resource], :resource_id => action[:resource_id] },
+                  { :controller => model.to_resource, :action => action[:action], :id => item.id, :resource => action[:resource], :resource_id => action[:resource_id], :association_name => association_name },
                   { :confirm => action[:confirm], :method => action[:method], :target => "_parent" }
         end
       end.compact.join(" / ").html_safe
@@ -116,11 +117,11 @@ module Admin
         should_be_inactive = (item.respond_to?(:first?) && ([:move_higher, :move_to_top].include?(key) && item.first?)) ||
                              (item.respond_to?(:last?) &&  ([:move_lower, :move_to_bottom].include?(key) && item.last?))
         html_position << link_to_unless(should_be_inactive, Typus::I18n.t(value), params.merge(options)) do |name|
-          raw %(<span class="inactive">#{name}</span>)
+          %w(<span class="inactive">#{name}</span>)
         end
       end
 
-      "#{item.position}<br/><br/>#{html_position.join(connector)}".html_safe
+      "#{item.position}<br/><br/>#{html_position.compact.join(connector)}".html_safe
     end
 
     def table_datetime_field(attribute, item)

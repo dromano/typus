@@ -50,7 +50,7 @@ ActiveRecord::Schema.define do
     t.string :title, :null => false
     t.text :content
     t.string :type
-    t.boolean :published
+    t.boolean :published, :null => false, :default => false
   end
 
   create_table :categories_entries, :force => true, :id => false do |t|
@@ -136,6 +136,28 @@ ActiveRecord::Schema.define do
 
   create_table :orders, :force => true do |t|
     t.string :number
+    t.timestamps
+  end
+
+  ##
+  # has_many through relationships
+  #
+
+  create_table :users, :force => true do |t|
+    t.string :name, :null => false
+    t.string :email
+    t.timestamps
+  end
+
+  create_table :projects, :force => true do |t|
+    t.string :name, :null => false
+    t.integer :user_id, :null => false
+    t.timestamps
+  end
+
+  create_table :project_collaborators, :force => true do |t|
+    t.integer :user_id, :null => false
+    t.integer :project_id, :null => false
     t.timestamps
   end
 

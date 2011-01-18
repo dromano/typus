@@ -52,12 +52,12 @@ class TypusTest < ActiveSupport::TestCase
   end
 
   should "return modules of the CRUD Extended application" do
-    expected = ["Asset", "Case", "Category", "Comment", "Page", "Post"]
+    expected = ["Asset", "Category", "Comment", "Page", "Post"]
     assert_equal expected, Typus.application("CRUD Extended")
   end
 
   should "return models and should be sorted" do
-    expected = %w(Asset Case Category Comment Entry Invoice Order Page Post Project ProjectCollaborator TypusUser View)
+    expected = %w(Asset Case Category Comment Entry Invoice Order Page Post Project ProjectCollaborator TypusUser User View)
     assert_equal expected, Typus.models
   end
 
