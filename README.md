@@ -15,7 +15,7 @@ extensible enough to match lots of use cases.
 - Internationalized interface (Català, German, Greek, English, Español,
 Français, Magyar, Italiano, Portuguese, Russian, 中文)
 - Customizable and extensible templates.
-- Integrated [paperclip][1] and [dragonfly][2] attachments viewer.
+- Integrated [paperclip][1] and [dragonfly][2] and [carrierwave][3] attachments viewer.
 - Low memory footprint.
 - Works with `Rails 3.0`.
 - Tested with `Ruby 1.8.7-p300` and `Ruby 1.9.2-p136`.
