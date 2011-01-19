@@ -3,7 +3,8 @@ class Admin::ResourcesController < Admin::BaseController
   include Typus::Actions
   include Typus::Filters
   include Typus::Format
-
+  include Admin::FilePreviewHelper
+  
   before_filter :get_model
   before_filter :set_scope
   before_filter :get_object, :only => [:show, :edit, :update, :destroy, :toggle, :position, :relate, :unrelate, :detach]
@@ -80,7 +81,14 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   def detach
-    if @item.update_attributes(params[:attribute] => nil)
+    attribute = params[:attribute]
+    attachment = @item.send(params[:attribute])
+    attachment_type = get_type_of_attachment(attachment)
+    detatch_params = { params[:attribute] => nil }
+    if attachment_type == :carrierwave
+      detatch_params["remove_#{attribute}"] = true
+    end
+    if @item.update_attributes(detatch_params)
       redirect_on_success
     else
       render :edit
